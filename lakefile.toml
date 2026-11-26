@@ -1,0 +1,10 @@
+name = "leanclove"
+version = "0.1.0"
+defaultTargets = ["LeanClove"]
+testDriver = "LeanCloveTest"
+
+[[lean_lib]]
+name = "LeanClove"
+
+[[lean_lib]]
+name = "LeanCloveTest"
