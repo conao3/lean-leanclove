@@ -23,7 +23,7 @@ Use Lean `leanprover/lean4:v4.35.0`. Add the following to your project's `lakefi
 [[require]]
 name = "leanclove"
 git = "https://github.com/conao3/lean-leanclove.git"
-rev = "master"
+rev = "main"
 ```
 
 Run `lake update leanclove`, then `import LeanClove`. The repository is private:
