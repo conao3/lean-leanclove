@@ -61,6 +61,23 @@ private def m : Std.HashMap String Nat := zipmap ["a", "b", "a", "unpaired"] [1,
 #guard get (selectKeys m ["a", "missing", "a"]) "a" == Option.some 3
 #guard get (selectKeys m ["a"]) "b" == none
 #guard get (selectKeys m ["missing"]) "missing" == none
+
+private structure SelectionKey where
+  id : Nat
+  label : String
+
+private instance : BEq SelectionKey where
+  beq a b := a.id == b.id
+
+private instance : Hashable SelectionKey where
+  hash key := hash key.id
+
+#guard
+  let stored : SelectionKey := { id := 1, label := "stored" }
+  let original := zipmap [stored] [42]
+  let requested : SelectionKey := { id := 1, label := "requested" }
+  ((selectKeys original [requested]).getKey? requested).map SelectionKey.label == Option.some "stored"
+
 #guard get (groupBy (· % 2) [1, 3, 2, 5, 4]) 1 == Option.some [1, 3, 5]
 #guard get (groupBy (· % 2) [1, 3, 2, 5, 4]) 0 == Option.some [2, 4]
 #guard get (groupBy (· % 2) [1, 3]) 0 == none

@@ -18,8 +18,13 @@ def update (m : HashMap κ α) (key : κ) (f : Option α → α) : HashMap κ α
 /-- Combine two maps, preferring the right map on collisions. -/
 def merge (left right : HashMap κ α) : HashMap κ α := left ∪ right
 
+private def insertSelected (m acc : HashMap κ α) (key : κ) : HashMap κ α :=
+  match m.getKey? key, get m key with
+  | Option.some storedKey, Option.some value => assoc acc storedKey value
+  | _, _ => acc
+
 def selectKeys (m : HashMap κ α) (keys : List κ) : HashMap κ α :=
-  m.filter fun key _ => keys.contains key
+  keys.foldl (insertSelected m) ∅
 
 def zipmap (keys : List κ) (values : List α) : HashMap κ α :=
   HashMap.ofList (keys.zip values)
@@ -40,11 +45,33 @@ theorem get_merge [LawfulBEq κ] (left right : HashMap κ α) (key : κ) :
     get (merge left right) key = (get right key).or (get left key) :=
   HashMap.getElem?_union
 
+private theorem get_insertSelected [LawfulBEq κ] (m acc : HashMap κ α) (k key : κ) :
+    get (insertSelected m acc k) key =
+      if k == key then (get m key).or (get acc key) else get acc key := by
+  cases hv : get m k with
+  | none =>
+    rw [insertSelected, hv]
+    cases m.getKey? k <;> by_cases he : k = key <;> simp_all
+  | some value =>
+    have hm : k ∈ m := HashMap.mem_iff_isSome_getElem?.mpr (by
+      change (get m k).isSome
+      simp [hv])
+    rw [insertSelected, HashMap.getKey?_eq_some hm, hv, get_assoc]
+    by_cases he : k = key <;> simp_all
+
 theorem get_selectKeys [LawfulBEq κ] (m : HashMap κ α) (keys : List κ) (key : κ) :
     get (selectKeys m keys) key = if keys.contains key then get m key else none := by
-  unfold get selectKeys
-  rw [HashMap.getElem?_filter']
-  cases keys.contains key <;> cases m[key]? <;> rfl
+  have get_fold (acc : HashMap κ α) :
+      get (keys.foldl (insertSelected m) acc) key =
+        if keys.contains key then (get m key).or (get acc key) else get acc key := by
+    induction keys generalizing acc with
+    | nil => rfl
+    | cons k keys ih =>
+      rw [List.foldl_cons, ih, get_insertSelected, List.contains_cons]
+      rw [Bool.beq_comm (a := key) (b := k)]
+      by_cases hk : (k == key) = true <;> by_cases ht : keys.contains key = true <;>
+        cases hv : get m key <;> simp_all
+  simpa [selectKeys, get, Option.or_none] using get_fold ∅
 
 theorem get_zipmap_of_mem [LawfulBEq κ] {keys : List κ} {values : List α}
     {key : κ} {value : α}
