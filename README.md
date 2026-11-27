@@ -26,8 +26,7 @@ git = "https://github.com/conao3/lean-leanclove.git"
 rev = "main"
 ```
 
-Run `lake update leanclove`, then `import LeanClove`. The repository is private:
-Git must already be authenticated with read access. Pin `rev` to a commit for reproducible builds.
+Run `lake update leanclove`, then `import LeanClove`. Pin `rev` to a commit for reproducible builds.
 
 ## Functions and proofs
 
