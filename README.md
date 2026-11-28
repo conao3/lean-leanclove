@@ -1,7 +1,27 @@
+<p align="center">
+  <img src="docs/assets/banner.png" alt="leanclove: clojure.core functions for Lean 4, with proofs" width="880">
+</p>
+
+<p align="center"><strong>clojure.core functions for Lean 4, with proofs</strong></p>
+
+<p align="center">
+  <a href="https://github.com/conao3/lean-leanclove/actions/workflows/ci.yml"><img src="https://github.com/conao3/lean-leanclove/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/conao3/lean-leanclove" alt="License: Apache-2.0"></a>
+  <a href="lean-toolchain"><img src="https://img.shields.io/badge/Lean-v4.35.0-blue" alt="Lean v4.35.0"></a>
+  <a href="https://github.com/conao3/lean-leanclove/stargazers"><img src="https://img.shields.io/github/stars/conao3/lean-leanclove?style=flat" alt="GitHub stars"></a>
+</p>
+
+<p align="center">
+  <a href="#install">Install</a> |
+  <a href="#functions-and-proofs">Functions and proofs</a> |
+  <a href="#development">Development</a> |
+  <a href="#license">License</a>
+</p>
+
 # leanclove
 
 Lean 4 versions of selected `clojure.core` functions, with machine-checked laws.
-LeanClove works on ordinary Lean lists, options, and hash maps, with no dependencies beyond Lean's standard library.
+LeanClove works on ordinary Lean lists, options, and hash maps, and depends only on Lean's standard library.
 
 ```lean
 import LeanClove
@@ -39,9 +59,9 @@ Run `lake update leanclove`, then `import LeanClove`. Pin `rev` to a commit for 
 | Maps and aggregations | `get`, `assoc`, `dissoc`, `update`, `merge`, `selectKeys`, `zipmap`, `groupBy`, `frequencies` | Lookup laws, stable groups match filtered input, frequency lookup counts occurrences and all counts sum to the input length |
 | Function helpers | `identity`, `constantly`, `comp`, `partial`, `complement`, `fnil`, `juxt` | Composition laws, partial application, double complement, fallback and length laws |
 
-These are typed, eager analogues, not a port of Clojure's lazy sequences or dynamic runtime.
+The functions are typed and eager, and work on finite values instead of Clojure's lazy sequences and dynamic runtime.
 `first`, `next`, `last`, `nth`, and `get` use `Option` for absence. `keep` and `some` accept
-`Option`-valued callbacks; `Option.some false` is a present result, not a falsey value.
+`Option`-valued callbacks; they count `Option.some false` as a present result, where Clojure would treat `false` as falsey.
 Predicates use `Bool`. `conj` prepends to lists, and `concat` and `interleave` are binary.
 `partition` and `partitionAll` use non-overlapping chunks and return no chunks for size zero.
 `partition` drops a short final chunk; `partitionAll` retains it.
